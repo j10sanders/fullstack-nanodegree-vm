@@ -23,10 +23,10 @@ def countPlayers():
     """Returns the number of players currently registered."""
     conn = connect()
     c = conn.cursor()
-    c.execute("select count(players.id) as num from players;")
-    conn.commit()
+    c.execute("select count(players) as num from players")
+    players = c.fetchone()[0]
     conn.close()
-    return(players)
+    return players
 
 def registerPlayer(name):
     """Adds a player to the tournament database.

@@ -13,4 +13,4 @@ CREATE TABLE players(id serial primary key, name text);
 
 CREATE TABLE matches(id serial primary key, player1 integer references players(id), player2 integer references PLAYERS(id));
 
-CREATE TABLE scoreboard(player integer references players(id))
+CREATE TABLE scoreboard(player integer references players(id));
