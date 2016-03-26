@@ -27,7 +27,24 @@ def deletePlayers():
     conn.commit()
     conn.close()
 
-def countPlayers():
+def deleteTournaments():
+    """Remove all the tournament records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("delete from tournaments;")
+    conn.commit()
+    conn.close()
+
+
+def deleteScoreboard():
+    """Remove all the scoreboard records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("delete from scoreboard;")
+    conn.commit()
+    conn.close()
+
+def countPlayers(tid):
     """Returns the number of players currently registered."""
     conn = connect()
     c = conn.cursor()
@@ -36,7 +53,7 @@ def countPlayers():
     conn.close()
     return players
 
-def registerPlayer(name):
+def registerPlayer(name, tid):
     """Adds a player to the tournament database.
   
     The database assigns a unique serial id number for the player.  (This
@@ -52,12 +69,14 @@ def registerPlayer(name):
     conn.commit()
     conn.close()
 
-def playerStandings():
+def playerStandings(tid):
     """Returns a list of the players and their win records, sorted by wins.
 
     The first entry in the list should be the player in first place, or a player
     tied for first place if there is currently a tie.
 
+    Args:
+        tid = tournament id
     Returns:
       A list of tuples, each of which contains (id, name, wins, matches):
         id: the player's unique id (assigned by the database)
@@ -65,7 +84,11 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-
+    conn = connect()
+    c = conn.cursor()
+    c.execute("select id, name, sum(matches_played), sum(wins) from players,  matches where matches_played;")
+    conn.close()
+    return id, name, wins, matches
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -74,6 +97,11 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    conn = connect()
+    c = conn.cursor()
+    c.execute("insert into matches(winner, loser) VALUES (%s,%s);")
+    conn.commit()
+    conn.close()
  
  
 def swissPairings():
@@ -91,5 +119,17 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+
+
+def createTournament(name):
+    """Create a new tournament.
+    Args:
+        Name of tournament
+    """
+    conn = connect()
+    c = conn.cursor()
+    c.execute("INSERT INTO tournaments (name) values (%s);", (bleach.clean(name),))
+    conn.commit()
+    conn.close()
 
 
