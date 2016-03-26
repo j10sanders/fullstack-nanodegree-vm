@@ -91,6 +91,7 @@ def testReportMatches():
     reportMatch(tid, id3, id4, id3)
     standings = playerStandings(tid)
     for (i, n, w, m) in standings:
+        #print(m, "test")
         if m != 1:
             raise ValueError("Each player should have one match recorded.")
         if i in (id1, id3) and w != 1:

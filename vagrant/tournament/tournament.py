@@ -79,9 +79,10 @@ def playerStandings(tid):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("select players_id, players_name, matches, wins from standings where tournament_id=%s", (bleach.clean(tid),))
+    c.execute("select players_id, players_name, wins, matches from standings where tournament_id=%s", (bleach.clean(tid),))
     standings = c.fetchall()
     conn.close()
+    #print(standings)
     return standings
 
 
