@@ -15,7 +15,8 @@ def deleteMatches():
     """Remove all the match records from the database."""
     conn = connect()
     c = conn.cursor()
-    c.execute("delete from matches;")
+    c.execute("DELETE FROM result;")
+    c.execute("DELETE FROM matches;")
     conn.commit()
     conn.close()
 
@@ -36,14 +37,6 @@ def deleteTournaments():
     conn.close()
 
 
-def deleteScoreboard():
-    """Remove all the scoreboard records from the database."""
-    conn = connect()
-    c = conn.cursor()
-    c.execute("delete from scoreboard;")
-    conn.commit()
-    conn.close()
-
 def countPlayers(tid):
     """Returns the number of players currently registered."""
     conn = connect()
@@ -53,7 +46,7 @@ def countPlayers(tid):
     conn.close()
     return players
 
-def registerPlayer(name, tid):
+def registerPlayer(name):
     """Adds a player to the tournament database.
   
     The database assigns a unique serial id number for the player.  (This
@@ -86,20 +79,29 @@ def playerStandings(tid):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("select id, name, sum(matches_played), sum(wins) from players,  matches where matches_played;")
+    c.execute("select players_id, players_name, matches, wins from standings where tournament_id=%s", (bleach.clean(tid),))
+    standings = c.fetchall()
     conn.close()
-    return id, name, wins, matches
+    return standings
 
-def reportMatch(winner, loser):
+
+def reportMatch(tid, id1, id2, w):
     """Records the outcome of a single match between two players.
 
     Args:
-      winner:  the id number of the player who won
-      loser:  the id number of the player who lost
+        tid = tournament id
+        id1:  player1
+        id2:  player2
+        w: id of the player who won
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("insert into matches(winner, loser) VALUES (%s,%s);")
+    c.execute("insert into matches(tournament_id, player1, player2) VALUES(%(tid)s, %(player1)s, %(player2)s) returning id;",
+        {'tid': bleach.clean(tid), 'player1': bleach.clean(id1), 'player2': bleach.clean(id2)})
+    match_id = c.fetchone()[0]
+    if w:
+        c.execute("insert into result(match_id, winner) VALUES(%(match_id)s, %(winner)s);",
+                  {'match_id': bleach.clean(match_id), 'winner': bleach.clean(w)})
     conn.commit()
     conn.close()
  
@@ -128,8 +130,9 @@ def createTournament(name):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO tournaments (name) values (%s);", (bleach.clean(name),))
+    c.execute("INSERT INTO tournaments (name) values (%s) returning id;", (bleach.clean(name),))
+    tournament_id = c.fetchone()[0]
     conn.commit()
     conn.close()
-
+    return tournament_id
 
