@@ -90,6 +90,7 @@ def testReportMatches():
     reportMatch(tid, id1, id2, id1)
     reportMatch(tid, id3, id4, id3)
     standings = playerStandings(tid)
+    print(standings)
     for (i, n, w, m) in standings:
         #print(m, "test")
         if m != 1:
@@ -118,7 +119,6 @@ def testPairings():
     deletePlayers()
     deleteTournaments()
     tid = createTournament('Test2')
-    standings = playerStandings(tid)
     registerPlayer("Twilight Sparkle")
     registerPlayer("Fluttershy")
     registerPlayer("Applejack")
@@ -127,16 +127,13 @@ def testPairings():
     registerPlayer("Rainbow Dash")
     registerPlayer("Princess Celestia")
     registerPlayer("Princess Luna")
+    standings = playerStandings(tid)
     [id1, id2, id3, id4, id5, id6, id7, id8] = [row[0] for row in standings]
-    pairings = swissPairings()
-    if len(pairings) != 4:
-        raise ValueError(
-            "For eight players, swissPairings should return 4 pairs. Got {pairs}".format(pairs=len(pairings)))
-    reportMatch(id1, id2)
-    reportMatch(id3, id4)
-    reportMatch(id5, id6)
-    reportMatch(id7, id8)
-    pairings = swissPairings()
+    reportMatch(tid, id1, id2, id1)
+    reportMatch(tid, id3, id4, id3)
+    reportMatch(tid, id5, id6, id5)
+    reportMatch(tid, id7, id8, id7)
+    pairings = swissPairings(tid)
     if len(pairings) != 4:
         raise ValueError(
             "For eight players, swissPairings should return 4 pairs. Got {pairs}".format(pairs=len(pairings)))

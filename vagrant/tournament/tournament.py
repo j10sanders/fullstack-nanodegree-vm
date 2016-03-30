@@ -82,7 +82,6 @@ def playerStandings(tid):
     c.execute("select players_id, players_name, wins, matches from standings where tournament_id=%s", (bleach.clean(tid),))
     standings = c.fetchall()
     conn.close()
-    #print(standings)
     return standings
 
 
@@ -107,7 +106,7 @@ def reportMatch(tid, id1, id2, w):
     conn.close()
  
  
-def swissPairings():
+def swissPairings(tid):
     """Returns a list of pairs of players for the next round of a match.
   
     Assuming that there are an even number of players registered, each player
@@ -122,6 +121,25 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    conn = connect()
+    c = conn.cursor()
+    c.execute("select p.players_id, p.players_name from standings p where p.tournament_id=%s order by p.wins desc;", (bleach.clean(tid),))
+    standings = c.fetchall()
+    matches=[]
+    i = 0
+    while i < len(standings):
+        if i % 2 == 0:
+            id1 = standings[i-1][0]
+            name1 = standings[i-1][1]
+
+            id2 = standings[i-2][0]
+            name2 = standings[i-2][1]
+
+            matches.append((id1, name1, id2, name2))
+
+        i += 1
+    print(matches)
+    return matches
 
 
 def createTournament(name):
