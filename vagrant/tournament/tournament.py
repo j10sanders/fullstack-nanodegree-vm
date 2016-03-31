@@ -139,7 +139,6 @@ def swissPairings(tid):
 
         i += 1
     conn.close()
-    print(matches)
     return matches
 
 def createTournament(name):
