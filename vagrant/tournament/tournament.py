@@ -138,9 +138,9 @@ def swissPairings(tid):
             matches.append((id1, name1, id2, name2))
 
         i += 1
+    conn.close()
     print(matches)
     return matches
-
 
 def createTournament(name):
     """Create a new tournament.
